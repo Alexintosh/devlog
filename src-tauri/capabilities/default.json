@@ -14,6 +14,9 @@
     {
       "identifier": "fs:allow-write-text-file",
       "allow": [{ "path": "*.txt" }]
-    }
+    },
+    "global-shortcut:allow-is-registered",
+    "global-shortcut:allow-register",
+    "global-shortcut:allow-unregister"
   ]
 } 

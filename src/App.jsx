@@ -4,8 +4,9 @@ import { TrayIcon } from '@tauri-apps/api/tray';
 import { Menu } from '@tauri-apps/api/menu';
 import { defaultWindowIcon } from '@tauri-apps/api/app';
 import { open as openDialog } from '@tauri-apps/plugin-dialog';
-import { open, writeTextFile, BaseDirectory } from '@tauri-apps/plugin-fs';
+import { writeTextFile } from '@tauri-apps/plugin-fs';
 import { getCurrentWindow, PhysicalSize } from '@tauri-apps/api/window';
+import { register } from '@tauri-apps/plugin-global-shortcut';
 
 function App() {
   const [message, setMessage] = useState('');
@@ -16,6 +17,19 @@ function App() {
 
   useEffect(() => {
     
+    const registerBindings = async () => {
+      try {
+        await register('Command+Q', () => {
+          console.log('Shortcut triggered');
+        });
+      } catch (error) {
+        console.error('Error registering shortcut:', error);
+      }
+    }
+
+    registerBindings();
+
+
     
     let tray;
     const createTray = async () => {
@@ -53,9 +67,6 @@ function App() {
         menuOnLeftClick: true,
       });
 
-      tray.onTrayEvent((event) => {
-        console.log('Tray event:', event);
-      });
     };
 
     createTray().catch(console.error);
