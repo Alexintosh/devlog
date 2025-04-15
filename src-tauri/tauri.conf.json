@@ -14,8 +14,8 @@
       {
         "title": "devlog",
         "width": 800,
-        "height": 600,
-        "resizable": false,
+        "height": 100,
+        "resizable": true,
         "decorations": true,
         "transparent": true,
         "alwaysOnTop": false,

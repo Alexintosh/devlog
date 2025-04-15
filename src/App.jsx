@@ -5,6 +5,7 @@ import { Menu } from '@tauri-apps/api/menu';
 import { defaultWindowIcon } from '@tauri-apps/api/app';
 import { open as openDialog } from '@tauri-apps/plugin-dialog';
 import { open, writeTextFile, BaseDirectory } from '@tauri-apps/plugin-fs';
+import { getCurrentWindow, PhysicalSize } from '@tauri-apps/api/window';
 
 function App() {
   const [message, setMessage] = useState('');
@@ -14,6 +15,8 @@ function App() {
   const [fileValue, setFileValue] = useState(null);
 
   useEffect(() => {
+    
+    
     let tray;
     const createTray = async () => {
       // Prevent double initialization
@@ -33,6 +36,8 @@ function App() {
         id: 'setting',
         text: 'Settings',
         action: async () => {
+          // Set window size
+          (await getCurrentWindow()).setSize(new PhysicalSize(800, 600));
           setShowSettings(true);
         }
       };
@@ -106,7 +111,10 @@ function App() {
               </p>
             )}
           </div>
-          <button onClick={() => setShowSettings(false)}>Back</button>
+          <button onClick={async () => {
+            (await getCurrentWindow()).setSize(new PhysicalSize(800, 100));
+            setShowSettings(false)
+            }}>Back</button>
         </div>
       ) : (
         <div className="chat-input-container">
