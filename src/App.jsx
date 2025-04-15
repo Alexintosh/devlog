@@ -1,17 +1,20 @@
-import { useState, useEffect } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
+import { useState, useEffect, useRef } from 'react'
 import './App.css'
 import { TrayIcon } from '@tauri-apps/api/tray';
 import { Menu } from '@tauri-apps/api/menu';
 import { defaultWindowIcon } from '@tauri-apps/api/app';
 
 function App() {
-  const [count, setCount] = useState(0)
+  const [message, setMessage] = useState('');
+  const trayInitialized = useRef(false);
 
   useEffect(() => {
     let tray;
     const createTray = async () => {
+      // Prevent double initialization
+      if (trayInitialized.current) return;
+      trayInitialized.current = true;
+      
       console.log('Creating tray');
       const quitItem = {
         id: 'quit',
@@ -21,24 +24,29 @@ function App() {
         }
       };
 
+      const SettingsItem = {
+        id: 'setting',
+        text: 'Settings',
+        action: async () => {
+          console.log('Settings');
+        }
+      };
+
       const menu = await Menu.new({
-        items: [quitItem]
+        items: [SettingsItem, quitItem]
       });
 
       tray = await TrayIcon.new({
         icon: await defaultWindowIcon(),
         tooltip: 'My Tauri App',
         menu: menu,
-        menuOnLeftClick: false, // Optional: Set to true to show menu on left click
+        menuOnLeftClick: true, // Optional: Set to true to show menu on left click
       });
 
       // Optional: Add listener for general tray events
       tray.onTrayEvent((event) => {
         console.log('Tray event:', event);
       });
-
-      tray.setShowMenuOnLeftClick(true);
-
     };
 
     createTray().catch(console.error);
@@ -49,30 +57,30 @@ function App() {
     };
   }, []);
 
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (!message.trim()) return;
+    
+    console.log('Message submitted:', message);
+    setMessage('');
+  };
+
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
+    <div className="app-container" data-tauri-drag-region>
+      <div className="chat-input-container">
+        <form onSubmit={handleSubmit} style={{ width: '100%', display: 'flex' }}>
+          <input
+            type="text"
+            className="chat-input"
+            value={message}
+            onChange={(e) => setMessage(e.target.value)}
+            placeholder="log..."
+            autoFocus
+          />
+        </form>
       </div>
-      <h1>Suca</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+    </div>
+  );
 }
 
 export default App
