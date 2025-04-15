@@ -8,6 +8,11 @@
   "permissions": [
     "core:default",
     "core:app:allow-default-window-icon",
-    "core:window:allow-start-dragging"
+    "core:window:allow-start-dragging",
+    "dialog:allow-open",
+    {
+      "identifier": "fs:allow-write-text-file",
+      "allow": [{ "path": "*.txt" }]
+    }
   ]
-}
+} 
